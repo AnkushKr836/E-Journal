@@ -99,12 +99,13 @@ To respect attention and reduce notification burnout, alerts follow a tiered dis
                                 └───────────────────────────────┘
 ```
 
-| Layer | Target Architecture | Considerations |
+| Layer | Selected Architecture | Considerations |
 | :--- | :--- | :--- |
-| **Mobile Client** | React Native (Expo) / Flutter | High frame rate, native Android home-screen widget compatibility, foreground service execution. |
-| **Desktop Client** | Responsive Web (Next.js) / Tauri v2 | Ultra-light memory footprint, global shortcuts, cross-platform compilation. |
-| **Data Engine** | Local-First SQLite + Cloud Sync | Immediate offline durability, field-level conflict resolution, low sync latency. |
-| **Notification Pipeline** | FCM + Platform Native Alarm Services | Guaranteed on-time delivery despite aggressive OS background throttling. |
+| **Mobile & Desktop** | **Flutter 3.x (Dart)** | Single codebase compiling natively to Android (`.apk`) and Windows Desktop (`.exe`). |
+| **State Management** | **Riverpod** | Reactive, compile-safe dependency injection and state management. |
+| **Local Data Engine** | **Drift (SQLite) / Isar DB** | Zero-latency local reads/writes, reactive UI updates, offline-first reliability. |
+| **Cloud Sync & Auth** | **Supabase (`supabase_flutter`)** | Managed PostgreSQL, Row Level Security, Realtime sync, and OAuth/Magic Link Auth. |
+| **Notification Pipeline** | `flutter_local_notifications` + FCM | Native `AlarmManager` on Android for exact timers; Windows system tray notifications. |
 
 > Detailed technical requirements, user personas, and data schemas are documented in the [Product Requirements Document (PRD.md)](PRD.md).
 
