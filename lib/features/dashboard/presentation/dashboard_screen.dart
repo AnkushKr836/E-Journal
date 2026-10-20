@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/glass_container.dart';
+import '../../tasks/presentation/tasks_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -268,7 +269,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             index: _currentNavIndex,
                             children: [
                               _buildScheduleView(isDark), // 0: Main Calendar View
-                              _buildTasksView(isDark),    // 1: Tasks
+                              const TasksScreen(),        // 1: Tasks (Kanban Multi-Column Board)
                               _buildChoresView(isDark),   // 2: Chores
                               _buildGroceryView(isDark),  // 3: Grocery
                               _buildBudgetView(isDark),   // 4: Budget
@@ -1044,47 +1045,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   // ==========================================
-  // 4. SUB-MODULE VIEWS (Tasks, Chores, etc.)
+  // 4. SUB-MODULE VIEWS (Chores, etc.)
   // ==========================================
-  Widget _buildTasksView(bool isDark) {
-    return ListView(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Daily Tasks & Habits', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF38BDF8), foregroundColor: Colors.black),
-              onPressed: _addNewTaskDialog,
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add Task'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        for (var task in _tasks)
-          GlassContainer(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            borderRadius: 16,
-            child: CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: task['done'],
-              activeColor: const Color(0xFF38BDF8),
-              title: Text(
-                task['title'],
-                style: TextStyle(
-                  decoration: task['done'] ? TextDecoration.lineThrough : null,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              subtitle: Text('Category: ${task['tag']} • Priority: ${task['priority']}'),
-              onChanged: (val) => setState(() => task['done'] = val ?? false),
-            ),
-          ),
-      ],
-    );
-  }
 
   Widget _buildChoresView(bool isDark) {
     return ListView(
