@@ -78,82 +78,90 @@ class _TaskCardState extends ConsumerState<TaskCard> {
           // 1. Header: Priority Badge + Category Tag + Recurrence Icon + Menu
           Row(
             children: [
-              // Priority Pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(
-                  color: task.priority.color.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: task.priority.color.withValues(alpha: 0.4),
-                    width: 0.8,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(task.priority.icon, size: 11, color: task.priority.color),
-                    const SizedBox(width: 3),
-                    Text(
-                      task.priority.code,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: task.priority.color,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 6),
-
-              // Tag Pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF38BDF8).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  '#${task.tag}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF38BDF8),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-
-              // Recurrence Pill (if recurring)
-              if (task.recurrence.isRecurring)
-                Tooltip(
-                  message: task.recurrence.description,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.purpleAccent.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.repeat_rounded, size: 10, color: Colors.purpleAccent),
-                        SizedBox(width: 3),
-                        Text(
-                          'Recurring',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purpleAccent,
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Priority Pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: task.priority.color.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: task.priority.color.withValues(alpha: 0.4),
+                            width: 0.8,
                           ),
                         ),
-                      ],
-                    ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(task.priority.icon, size: 11, color: task.priority.color),
+                            const SizedBox(width: 3),
+                            Text(
+                              task.priority.code,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: task.priority.color,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
+                      // Tag Pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF38BDF8).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '#${task.tag}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF38BDF8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
+                      // Recurrence Pill (if recurring)
+                      if (task.recurrence.isRecurring)
+                        Tooltip(
+                          message: task.recurrence.description,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.purpleAccent.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.repeat_rounded, size: 10, color: Colors.purpleAccent),
+                                SizedBox(width: 3),
+                                Text(
+                                  'Recurring',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purpleAccent,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-
-              const Spacer(),
+              ),
 
               // Context Menu
               PopupMenuButton<String>(
@@ -388,11 +396,16 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                     color: task.isTimerRunning ? const Color(0xFF38BDF8) : null,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  '• ${task.formattedElapsed}',
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
-                ),
+                if (task.elapsedSeconds > 0) ...[
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      '• ${task.formattedElapsed}',
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
                 const Spacer(),
 
                 // Play / Pause Timer Button
@@ -438,25 +451,30 @@ class _TaskCardState extends ConsumerState<TaskCard> {
             children: [
               // Previous stage button
               if (task.status.previousStatus != null)
-                InkWell(
-                  onTap: () => tasksNotifier.retreatTaskStatus(task.id),
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back_ios_new_rounded, size: 10, color: Colors.grey),
-                        const SizedBox(width: 3),
-                        Text(
-                          task.status.previousStatus!.label,
-                          style: const TextStyle(fontSize: 9, color: Colors.grey),
-                        ),
-                      ],
+                Flexible(
+                  child: InkWell(
+                    onTap: () => tasksNotifier.retreatTaskStatus(task.id),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.arrow_back_ios_new_rounded, size: 10, color: Colors.grey),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              task.status.previousStatus!.label,
+                              style: const TextStyle(fontSize: 9, color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -465,48 +483,56 @@ class _TaskCardState extends ConsumerState<TaskCard> {
 
               // Recurring Rollover Action (if completed and recurring)
               if (task.isCompleted && task.recurrence.isRecurring)
-                FilledButton.tonalIcon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.purpleAccent.withValues(alpha: 0.2),
-                    foregroundColor: Colors.purpleAccent,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    visualDensity: VisualDensity.compact,
+                Tooltip(
+                  message: 'Rollover to next recurring occurrence',
+                  child: FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.purpleAccent.withValues(alpha: 0.2),
+                      foregroundColor: Colors.purpleAccent,
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    onPressed: () => tasksNotifier.rolloverRecurringTask(task.id),
+                    icon: const Icon(Icons.replay_rounded, size: 12),
+                    label: const Text('Rollover', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
-                  onPressed: () => tasksNotifier.rolloverRecurringTask(task.id),
-                  icon: const Icon(Icons.replay_rounded, size: 13),
-                  label: const Text('Reset Next Cycle', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                 ),
 
               // Next stage button
               if (task.status.nextStatus != null) ...[
                 const SizedBox(width: 6),
-                InkWell(
-                  onTap: () => tasksNotifier.advanceTaskStatus(task.id),
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: task.status.nextStatus!.color.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: task.status.nextStatus!.color.withValues(alpha: 0.4),
-                        width: 0.8,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          task.status.nextStatus!.label,
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                            color: task.status.nextStatus!.color,
-                          ),
+                Flexible(
+                  child: InkWell(
+                    onTap: () => tasksNotifier.advanceTaskStatus(task.id),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: task.status.nextStatus!.color.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: task.status.nextStatus!.color.withValues(alpha: 0.4),
+                          width: 0.8,
                         ),
-                        const SizedBox(width: 3),
-                        Icon(Icons.arrow_forward_ios_rounded, size: 10, color: task.status.nextStatus!.color),
-                      ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              task.status.nextStatus!.label,
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: task.status.nextStatus!.color,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          Icon(Icons.arrow_forward_ios_rounded, size: 10, color: task.status.nextStatus!.color),
+                        ],
+                      ),
                     ),
                   ),
                 ),

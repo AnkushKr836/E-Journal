@@ -59,12 +59,15 @@ class KanbanColumn extends ConsumerWidget {
                     child: Icon(status.icon, size: 16, color: status.color),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    status.label,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.3,
+                  Flexible(
+                    child: Text(
+                      status.label,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.3,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 8),
